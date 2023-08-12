@@ -4,7 +4,7 @@ const socketIO = require('socket.io');
 const cors = require('cors');
 
 const corsOptions = {
-    origin: 'http://localhost:5173', // Replace with your client's origin
+    origin: '*', // Allow requests from any origin
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
     optionsSuccessStatus: 204,
@@ -12,7 +12,7 @@ const corsOptions = {
 
 
 const app = express();
-app.use(cors(corsOptions)); // Use the cors middleware
+app.use(cors()); // Use the cors middleware
 const server = http.createServer(app);
 const io = socketIO(server);
 
