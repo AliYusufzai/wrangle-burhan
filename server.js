@@ -35,20 +35,22 @@ io.on('connection', (socket) => {
                 id: socket.id,
                 username,
             });
-            socket.emit('hostVideo', roomName);
+
+            // Notify the client that they are a host and can initiate video chat
+            socket.emit('hostVideo', rooms[roomName].users);
         } else {
             rooms[roomName].users.push({
                 id: socket.id,
                 username,
             });
-            socket.emit('enqueue');
-        }
 
-        io.to(roomName).emit('roomUsers', rooms[roomName].users);
+            // Notify the client that they are in the queue and cannot initiate video chat
+            socket.emit('hostVideo', rooms[roomName].users);
+        }
     });
 
     socket.on('sendMessage', (roomName, message, username) => {
-        io.to(roomName).emit('message', { username, message });
+        io.to(roomName).emit('receiveMessage', { username, message });
     });
 
     socket.on('disconnect', () => {
@@ -56,7 +58,7 @@ io.on('connection', (socket) => {
             const userIndex = rooms[roomName].users.findIndex((user) => user.id === socket.id);
             if (userIndex !== -1) {
                 rooms[roomName].users.splice(userIndex, 1);
-                io.to(roomName).emit('roomUsers', rooms[roomName].users);
+                io.to(roomName).emit('hostVideo', rooms[roomName].users);
                 break;
             }
         }
